@@ -41,6 +41,10 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     images: []
   };
 
+  if (tab?.id) {
+    await ensureContentScript(tab.id);
+  }
+
   switch (info.menuItemId) {
     case 'thymer-capture-selection':
       captureData.mode = 'selection';
@@ -95,6 +99,10 @@ chrome.commands.onCommand.addListener(async (command) => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tab) return;
 
+    if (tab.id) {
+      await ensureContentScript(tab.id);
+    }
+
     // Get selection if any
     let captureData = {
       url: tab.url,
@@ -126,6 +134,21 @@ chrome.commands.onCommand.addListener(async (command) => {
     await quickCapture(captureData);
   }
 });
+
+async function ensureContentScript(tabId) {
+  try {
+    await chrome.tabs.sendMessage(tabId, { type: 'PING' });
+  } catch (error) {
+    try {
+      await chrome.scripting.executeScript({
+        target: { tabId },
+        files: ['content/content.js']
+      });
+    } catch (e) {
+      // ignore; capture will fall back to link mode
+    }
+  }
+}
 
 // Quick capture with default settings
 async function quickCapture(captureData) {
