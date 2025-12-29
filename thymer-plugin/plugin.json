@@ -1,8 +1,8 @@
 {
   "ver": 1,
-  "name": "Quick Web Capture",
+  "name": "Web Capture",
   "icon": "paperclip",
-  "description": "Receives web captures from the Thymer Quick Capture Chrome extension",
+  "description": "Receives web captures from the Thymer Web Capture Chrome extension",
   "show_sidebar_items": false,
   "show_cmdpal_items": true,
   "home": false,

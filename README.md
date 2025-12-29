@@ -1,4 +1,4 @@
-# Thymer Quick Capture
+# Thymer Web Capture
 
 A Chrome extension + Thymer plugin combo for quickly capturing web links, highlights, and pages to your Thymer workspace.
 
@@ -29,7 +29,7 @@ A Chrome extension + Thymer plugin combo for quickly capturing web links, highli
   - Adds a timestamp when sending to a specific page (not needed for Journal)
 
 - **Keyboard Shortcuts:**
-  - `Cmd+Shift+T` (Mac) / `Ctrl+Shift+T` (Windows) - Quick capture (selection if present, otherwise link)
+  - `Cmd+Shift+T` (Mac) / `Ctrl+Shift+T` (Windows) - Web capture (selection if present, otherwise link)
 
 - **Context Menu:**
   - Right-click to send selection, link, image, or page to Thymer
@@ -70,13 +70,13 @@ Or create your own 16x16, 48x48, and 128x128 PNG icons.
 
 1. Make sure Thymer is open in a browser tab
 2. Navigate to any webpage you want to capture
-3. Click the Thymer Quick Capture extension icon (or use `Cmd+Shift+T`)
+3. Click the Thymer Web Capture extension icon (or use `Cmd+Shift+T`)
 4. Choose destination (Journal or specific page)
 5. (Optional) Select text on the page before sending to include it in the capture
 6. Add optional tags
 7. Click "Send to Thymer"
 
-### Quick Capture
+### Web Capture
 
 Use `Cmd+Shift+Y` / `Ctrl+Shift+Y` to instantly capture the current selection (or link if nothing selected) to your default destination.
 
@@ -102,7 +102,7 @@ Click the ⚙️ Settings button in the popup to configure:
 ```
 Chrome Extension                    Thymer App
 ┌─────────────────┐                ┌─────────────────┐
-│  Popup UI       │                │  Quick Capture  │
+│  Popup UI       │                │  Web Capture    │
 │  Background SW  │◄──postMessage──►  Plugin         │
 │  Content Script │                │                 │
 └─────────────────┘                └─────────────────┘
@@ -134,7 +134,7 @@ For hot-reloading during development:
 **"Not connected to Thymer"**
 - Make sure Thymer is open in a browser tab
 - Refresh the Thymer tab
-- Check that the Quick Capture plugin is installed and enabled
+- Check that the Web Capture plugin is installed and enabled
 
 **Capture not working**
 - Check the browser console for errors

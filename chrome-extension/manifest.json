@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Thymer Quick Capture",
+  "name": "Thymer Web Capture",
   "version": "1.0.0",
   "description": "Quickly capture web links, highlights, and pages to Thymer",
   "permissions": [
@@ -39,14 +39,14 @@
   ],
   "commands": {
     "_execute_action": {
-      "description": "Open Thymer Quick Capture"
+      "description": "Open Thymer Web Capture"
     },
     "quick_capture": {
       "suggested_key": {
         "default": "Alt+Shift+C",
         "mac": "Option+Shift+C"
       },
-      "description": "Quick capture current selection to Thymer"
+      "description": "Web capture current selection to Thymer"
     }
   },
   "icons": {

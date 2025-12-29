@@ -1,8 +1,8 @@
-// Thymer Quick Capture - Content Script
+// Thymer Web Capture - Content Script
 
 (function() {
   // Prevent multiple injections
-  if (window.__thymerCaptureInjected) return;
+  if (window.__thymerContentScriptInjected) return;
   window.__thymerCaptureInjected = true;
 
   // Listen for messages from popup or background

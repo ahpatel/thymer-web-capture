@@ -1,4 +1,4 @@
-// Thymer Quick Capture - Popup Script
+// Thymer Web Capture - Popup Script
 
 class ThymerCapture {
   constructor() {
@@ -529,7 +529,7 @@ class ThymerCapture {
       }
     } catch (error) {
       console.error('[Popup] Send failed:', error);
-      alert(`Failed to send to Thymer: ${error.message}\n\nMake sure:\n1. Thymer is open in a tab\n2. The Quick Capture plugin is installed in Thymer\n3. Try refreshing the Thymer tab`);
+      alert(`Failed to send to Thymer: ${error.message}\n\nMake sure:\n1. Thymer is open in a tab\n2. The Web Capture plugin is installed in Thymer\n3. Try refreshing the Thymer tab`);
     } finally {
       this.state.isSending = false;
       this.elements.sendBtnText.classList.remove('hidden');

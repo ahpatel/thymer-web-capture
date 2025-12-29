@@ -1,4 +1,4 @@
-// Thymer Quick Capture - Background Service Worker
+// Thymer Web Capture - Background Service Worker
 
 // Create context menu on install
 chrome.runtime.onInstalled.addListener(() => {
@@ -89,11 +89,11 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       break;
   }
 
-  // Send to Thymer via quick capture (uses default settings)
+  // Send to Thymer via web capture (uses default settings)
   await quickCapture(captureData);
 });
 
-// Handle keyboard shortcut for quick capture
+// Handle keyboard shortcut for web capture
 chrome.commands.onCommand.addListener(async (command) => {
   if (command === 'quick_capture') {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -150,7 +150,7 @@ async function ensureContentScript(tabId) {
   }
 }
 
-// Quick capture with default settings
+// Web capture with default settings
 async function quickCapture(captureData) {
   const settings = await chrome.storage.sync.get({
     defaultDestination: 'journal'
@@ -180,7 +180,7 @@ async function quickCapture(captureData) {
     chrome.notifications.create({
       type: 'basic',
       iconUrl: '../icons/icon48.png',
-      title: 'Thymer Quick Capture',
+      title: 'Thymer Web Capture',
       message: 'Please open Thymer in a tab first'
     });
     return;
@@ -200,7 +200,7 @@ async function quickCapture(captureData) {
       throw new Error(response?.error || 'Unknown error');
     }
   } catch (error) {
-    console.error('Quick capture failed:', error);
+    console.error('Web capture failed:', error);
     chrome.notifications.create({
       type: 'basic',
       iconUrl: '../icons/icon48.png',

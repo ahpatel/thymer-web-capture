@@ -1,4 +1,4 @@
-// Thymer Quick Capture - Bridge Script (runs on thymer.com)
+// Thymer Web Capture - Bridge Script (runs on thymer.com)
 // This script bridges the Chrome extension with the Thymer plugin
 
 (function() {
@@ -33,7 +33,7 @@
       setTimeout(() => {
         window.removeEventListener('message', handler);
         console.log('[Thymer Bridge] Timeout waiting for plugin response');
-        resolve({ error: 'Timeout waiting for Thymer plugin response. Make sure the Quick Capture plugin is installed.' });
+        resolve({ error: 'Timeout waiting for Thymer plugin response. Make sure the Web Capture plugin is installed.' });
       }, 10000);
     });
 
