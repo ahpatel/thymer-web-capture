@@ -43,8 +43,8 @@
     },
     "quick_capture": {
       "suggested_key": {
-        "default": "Ctrl+Shift+T",
-        "mac": "Command+Shift+T"
+        "default": "Alt+Shift+C",
+        "mac": "Option+Shift+C"
       },
       "description": "Quick capture current selection to Thymer"
     }
