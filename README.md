@@ -29,8 +29,7 @@ A Chrome extension + Thymer plugin combo for quickly capturing web links, highli
   - Adds a timestamp when sending to a specific page (not needed for Journal)
 
 - **Keyboard Shortcuts:**
-  - `Cmd+Shift+T` (Mac) / `Ctrl+Shift+T` (Windows) - Open popup
-  - `Cmd+Shift+Y` (Mac) / `Ctrl+Shift+Y` (Windows) - Quick capture selection
+  - `Cmd+Shift+T` (Mac) / `Ctrl+Shift+T` (Windows) - Quick capture (selection if present, otherwise link)
 
 - **Context Menu:**
   - Right-click to send selection, link, image, or page to Thymer
