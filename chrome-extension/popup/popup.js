@@ -1,5 +1,10 @@
 // Thymer Web Capture - Popup Script
 
+const DEBUG = false;
+const log = (...args) => {
+  if (DEBUG) console.log(...args);
+};
+
 class ThymerCapture {
   constructor() {
     this.state = {
@@ -356,12 +361,12 @@ class ThymerCapture {
   }
 
   async getTagSuggestions(query) {
-    console.log('[Popup] Requesting tag suggestions for:', query);
+    log('[Popup] Requesting tag suggestions for:', query);
     const results = await this.sendToThymerTab({
       type: 'THYMER_GET_TAGS',
       query: query
     });
-    console.log('[Popup] Tag suggestions received:', results);
+    log('[Popup] Tag suggestions received:', results);
 
     const suggestions = Array.isArray(results) ? results : [];
     const normalizedQuery = query.startsWith('#') ? query : `#${query}`;
@@ -451,10 +456,10 @@ class ThymerCapture {
   }
 
   async checkConnection() {
-    console.log('[Popup] Checking connection to Thymer...');
+    log('[Popup] Checking connection to Thymer...');
     try {
       const response = await this.sendToThymerTab({ type: 'THYMER_PING' });
-      console.log('[Popup] Connection check response:', response);
+      log('[Popup] Connection check response:', response);
       this.setConnectionStatus(response && response.connected);
     } catch (error) {
       console.error('[Popup] Connection check failed:', error);
@@ -502,9 +507,9 @@ class ThymerCapture {
         }
       };
 
-      console.log('[Popup] Sending capture payload:', payload);
+      log('[Popup] Sending capture payload:', payload);
       const response = await this.sendToThymerTab(payload);
-      console.log('[Popup] Capture response:', response);
+      log('[Popup] Capture response:', response);
 
       if (response && response.success) {
         const settings = await chrome.storage.sync.get({ autoClose: true, showNotification: true });
@@ -541,21 +546,21 @@ class ThymerCapture {
   async sendToThymerTab(message) {
     // Find Thymer tab and send message
     const tabs = await chrome.tabs.query({ url: 'https://*.thymer.com/*' });
-    console.log('[Popup] Found Thymer tabs:', tabs.length);
+    log('[Popup] Found Thymer tabs:', tabs.length);
     
     if (tabs.length === 0) {
-      console.log('[Popup] No Thymer tabs found');
+      log('[Popup] No Thymer tabs found');
       return null;
     }
 
     return new Promise((resolve) => {
-      console.log('[Popup] Sending message to tab:', tabs[0].id, message.type);
+      log('[Popup] Sending message to tab:', tabs[0].id, message.type);
       chrome.tabs.sendMessage(tabs[0].id, message, (response) => {
         if (chrome.runtime.lastError) {
           console.error('[Popup] Message send error:', chrome.runtime.lastError.message);
           resolve({ error: chrome.runtime.lastError.message });
         } else {
-          console.log('[Popup] Received response:', response);
+          log('[Popup] Received response:', response);
           resolve(response);
         }
       });

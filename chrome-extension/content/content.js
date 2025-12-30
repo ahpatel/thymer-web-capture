@@ -3,7 +3,7 @@
 (function() {
   // Prevent multiple injections
   if (window.__thymerContentScriptInjected) return;
-  window.__thymerCaptureInjected = true;
+  window.__thymerContentScriptInjected = true;
 
   // Listen for messages from popup or background
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {

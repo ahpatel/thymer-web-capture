@@ -1,14 +1,19 @@
 // Thymer Web Capture Plugin
 // Receives web captures from the Chrome extension and adds them to Thymer
 
+const DEBUG = false;
+const log = (...args) => {
+  if (DEBUG) console.log(...args);
+};
+
 class Plugin extends AppPlugin {
   onLoad() {
-    console.log('[Web Capture] Plugin loading...');
+    log('[Web Capture] Plugin loading...');
     this.setupMessageListener();
     this.setupStatusBar();
     this.setupCommandPalette();
     
-    console.log('[Web Capture] Plugin loaded and ready');
+    log('[Web Capture] Plugin loaded and ready');
   }
 
   onUnload() {
@@ -27,29 +32,29 @@ class Plugin extends AppPlugin {
       if (!event.data || event.data.source !== 'thymer-extension') return;
 
       const { type, messageId, payload, query } = event.data;
-      console.log('[Web Capture] Received message:', type, messageId);
+      log('[Web Capture] Received message:', type, messageId);
       
       let response = { error: 'Unknown message type' };
 
       try {
         switch (type) {
           case 'THYMER_PING':
-            console.log('[Web Capture] Handling PING');
+            log('[Web Capture] Handling PING');
             response = { connected: true };
             break;
 
           case 'THYMER_CAPTURE':
-            console.log('[Web Capture] Handling CAPTURE');
+            log('[Web Capture] Handling CAPTURE');
             response = await this.handleCapture(payload);
             break;
 
           case 'THYMER_SEARCH':
-            console.log('[Web Capture] Handling SEARCH:', query);
+            log('[Web Capture] Handling SEARCH:', query);
             response = await this.handleSearch(query);
             break;
 
           case 'THYMER_GET_TAGS':
-            console.log('[Web Capture] Handling GET_TAGS:', query);
+            log('[Web Capture] Handling GET_TAGS:', query);
             response = await this.handleGetTags(query);
             break;
 
@@ -61,7 +66,7 @@ class Plugin extends AppPlugin {
         response = { error: error.message };
       }
 
-      console.log('[Web Capture] Sending response:', response);
+      log('[Web Capture] Sending response:', response);
       
       // Send response back to the bridge
       window.postMessage({
@@ -73,7 +78,7 @@ class Plugin extends AppPlugin {
     };
 
     window.addEventListener('message', this.messageHandler);
-    console.log('[Web Capture] Message listener registered');
+    log('[Web Capture] Message listener registered');
   }
 
   setupStatusBar() {
@@ -108,17 +113,17 @@ class Plugin extends AppPlugin {
 
   async handleCapture(payload) {
     const { mode, url, title, content, images, tags, destination } = payload;
-    console.log('[Web Capture] Processing capture:', { mode, url, title, destination });
-    console.log('[Web Capture] Content length:', content?.length || 0, 'Images:', images?.length || 0);
+    log('[Web Capture] Processing capture:', { mode, url, title, destination });
+    log('[Web Capture] Content length:', content?.length || 0, 'Images:', images?.length || 0);
 
     try {
       let targetRecord;
 
       if (destination.type === 'journal') {
-        console.log('[Web Capture] Getting journal for today');
+        log('[Web Capture] Getting journal for today');
         targetRecord = await this.getJournalToday();
       } else if (destination.type === 'page' && destination.pageGuid) {
-        console.log('[Web Capture] Getting page:', destination.pageGuid);
+        log('[Web Capture] Getting page:', destination.pageGuid);
         targetRecord = this.data.getRecord(destination.pageGuid);
       }
 
@@ -127,7 +132,7 @@ class Plugin extends AppPlugin {
         return { error: 'Could not find destination page. Try selecting a specific page instead of Journal.' };
       }
 
-      console.log('[Web Capture] Target record:', targetRecord.getName());
+      log('[Web Capture] Target record:', targetRecord.getName());
 
       // Get existing line items to find where to append at the END
       const lineItems = await targetRecord.getLineItems();
@@ -144,7 +149,7 @@ class Plugin extends AppPlugin {
       // Create new line item(s) - use string literals for types
       if (mode === 'link') {
         // Title line + indented URL line
-        console.log('[Web Capture] Creating link line items');
+        log('[Web Capture] Creating link line items');
         
         // First line: Bold title with timestamp (non-journal only) and tags
         const titleLine = await targetRecord.createLineItem(null, lastDirectChild, 'text');
@@ -173,14 +178,14 @@ class Plugin extends AppPlugin {
               ]);
             }
           }
-          console.log('[Web Capture] Link lines created successfully');
+          log('[Web Capture] Link lines created successfully');
         } else {
           console.error('[Web Capture] Failed to create line item');
           return { error: 'Failed to create line item' };
         }
       } else {
         // Selection or full page: Title + URL + quoted content
-        console.log('[Web Capture] Creating content line items');
+        log('[Web Capture] Creating content line items');
         
         // First line: Bold title with tags
         const titleLine = await targetRecord.createLineItem(null, lastDirectChild, 'text');
@@ -231,7 +236,7 @@ class Plugin extends AppPlugin {
 
         // Add images as indented links (children of title line)
         if (images && images.length > 0) {
-          console.log('[Web Capture] Adding', images.length, 'images');
+          log('[Web Capture] Adding', images.length, 'images');
           for (const imgSrc of images.slice(0, 5)) { // Limit to 5 images
             if (imgSrc.startsWith('data:')) {
               continue; // Skip base64 for now
@@ -256,7 +261,7 @@ class Plugin extends AppPlugin {
   }
 
   async getJournalToday() {
-    console.log('[Web Capture] ========== JOURNAL LOOKUP START ==========');
+    log('[Web Capture] ========== JOURNAL LOOKUP START ==========');
     
     // Get today's date in multiple formats
     const today = new Date();
@@ -268,47 +273,47 @@ class Plugin extends AppPlugin {
     const monthDay = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }); // "December 29"
     const fullDateWithWeekday = today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); // "Monday, December 29, 2025"
     
-    console.log('[Web Capture] Looking for date YYYYMMDD:', todayYYYYMMDD, 'or', monthDay);
+    log('[Web Capture] Looking for date YYYYMMDD:', todayYYYYMMDD, 'or', monthDay);
     
     try {
       // STRATEGY 1: Get Journal collection and match by GUID date suffix
-      console.log('[Web Capture] Trying Journal collection approach...');
+      log('[Web Capture] Trying Journal collection approach...');
       const collections = await this.data.getAllCollections();
-      console.log('[Web Capture] Found', collections.length, 'collections');
+      log('[Web Capture] Found', collections.length, 'collections');
       
       for (const collection of collections) {
         const collName = collection.getName();
-        console.log('[Web Capture] Collection:', collName);
+        log('[Web Capture] Collection:', collName);
         
         // Look for Journal collection
         if (collName && collName.toLowerCase() === 'journal') {
-          console.log('[Web Capture] Found Journal collection, getting records...');
+          log('[Web Capture] Found Journal collection, getting records...');
           const journalRecords = await collection.getAllRecords();
-          console.log('[Web Capture] Journal has', journalRecords.length, 'records');
+          log('[Web Capture] Journal has', journalRecords.length, 'records');
           
           for (const record of journalRecords) {
             const guid = record.guid;
             const name = record.getName();
-            console.log('[Web Capture] Journal record - name:', name, 'guid:', guid);
+            log('[Web Capture] Journal record - name:', name, 'guid:', guid);
             
             // Match by GUID - Journal GUIDs end with YYYYMMDD
             if (guid && guid.endsWith(todayYYYYMMDD)) {
-              console.log('[Web Capture] FOUND by GUID date match:', guid);
+              log('[Web Capture] FOUND by GUID date match:', guid);
               return record;
             }
             
             // Also try matching by name if it has the date
             if (name && (name.includes(monthDay) || name.includes(todayYYYYMMDD))) {
-              console.log('[Web Capture] FOUND by name match:', name);
+              log('[Web Capture] FOUND by name match:', name);
               return record;
             }
           }
           
           // If we found the Journal collection but no entry for today, create one
-          console.log('[Web Capture] No entry for today, creating new journal entry...');
+          log('[Web Capture] No entry for today, creating new journal entry...');
           const newGuid = collection.createRecord(fullDateWithWeekday);
           if (newGuid) {
-            console.log('[Web Capture] Created new journal entry:', newGuid);
+            log('[Web Capture] Created new journal entry:', newGuid);
             const newRecord = this.data.getRecord(newGuid);
             if (newRecord) {
               return newRecord;
@@ -331,7 +336,7 @@ class Plugin extends AppPlugin {
               }
             }
             
-            console.log('[Web Capture] Using most recent journal entry:', latestRecord.guid);
+            log('[Web Capture] Using most recent journal entry:', latestRecord.guid);
             return latestRecord;
           }
         }
@@ -344,26 +349,26 @@ class Plugin extends AppPlugin {
         if (activeRecord) {
           const activeName = activeRecord.getName();
           const activeGuid = activeRecord.guid;
-          console.log('[Web Capture] Active panel record:', activeName, 'guid:', activeGuid);
+          log('[Web Capture] Active panel record:', activeName, 'guid:', activeGuid);
           
           // Check if active record is today's journal by GUID
           if (activeGuid && activeGuid.endsWith(todayYYYYMMDD)) {
-            console.log('[Web Capture] Active record IS today\'s journal!');
+            log('[Web Capture] Active record IS today\'s journal!');
             return activeRecord;
           }
           
           // Use active record as fallback
-          console.log('[Web Capture] Using active record as fallback');
+          log('[Web Capture] Using active record as fallback');
           return activeRecord;
         }
       }
       
       // STRATEGY 3: Scan all records for GUID match
-      console.log('[Web Capture] Last resort: scanning all records by GUID...');
+      log('[Web Capture] Last resort: scanning all records by GUID...');
       const allRecords = this.data.getAllRecords();
       for (const record of allRecords) {
         if (record.guid && record.guid.endsWith(todayYYYYMMDD)) {
-          console.log('[Web Capture] Found by GUID in all records:', record.guid);
+          log('[Web Capture] Found by GUID in all records:', record.guid);
           return record;
         }
       }
@@ -372,7 +377,7 @@ class Plugin extends AppPlugin {
       console.error('[Web Capture] Error finding journal:', error);
     }
     
-    console.log('[Web Capture] ========== JOURNAL LOOKUP FAILED ==========');
+    log('[Web Capture] ========== JOURNAL LOOKUP FAILED ==========');
     return null;
   }
 
@@ -382,11 +387,11 @@ class Plugin extends AppPlugin {
     }
 
     try {
-      console.log('[Web Capture] Searching for:', query);
+      log('[Web Capture] Searching for:', query);
       
       // Use the synchronous getAllRecords() from DataAPI
       const allRecords = this.data.getAllRecords();
-      console.log('[Web Capture] Total records in workspace:', allRecords.length);
+      log('[Web Capture] Total records in workspace:', allRecords.length);
       
       const matchingResults = [];
       
@@ -394,7 +399,7 @@ class Plugin extends AppPlugin {
         const name = record.getName();
         const guid = record.guid;
         
-        console.log('[Web Capture] Checking record:', name, guid);
+        log('[Web Capture] Checking record:', name, guid);
         
         // Check if name matches query (case-insensitive)
         if (name && name.toLowerCase().includes(query.toLowerCase())) {
@@ -405,7 +410,7 @@ class Plugin extends AppPlugin {
         }
       }
       
-      console.log('[Web Capture] Found', matchingResults.length, 'matching records');
+      log('[Web Capture] Found', matchingResults.length, 'matching records');
       
       if (matchingResults.length > 0) {
         return matchingResults.slice(0, 20);
@@ -418,7 +423,7 @@ class Plugin extends AppPlugin {
         name: record.getName()
       }));
       
-      console.log('[Web Capture] searchByQuery found', mapped.length, 'results');
+      log('[Web Capture] searchByQuery found', mapped.length, 'results');
       return mapped;
     } catch (error) {
       console.error('[Web Capture] Search failed:', error);
@@ -432,19 +437,19 @@ class Plugin extends AppPlugin {
     try {
       // Search for hashtags - try multiple approaches
       const searchQuery = query.startsWith('#') ? query : '#' + query;
-      console.log('[Web Capture] Searching for tags:', searchQuery);
+      log('[Web Capture] Searching for tags:', searchQuery);
       
       const tags = new Set();
       
       // Approach 1: Search for the hashtag directly
       const results = await this.data.searchByQuery(searchQuery, 50);
-      console.log('[Web Capture] Tag search returned', results.lines?.length || 0, 'lines');
+      log('[Web Capture] Tag search returned', results.lines?.length || 0, 'lines');
       
       if (results.lines && results.lines.length > 0) {
         for (const line of results.lines) {
           if (line.segments) {
             for (const segment of line.segments) {
-              console.log('[Web Capture] Segment:', segment.type, segment.text);
+              log('[Web Capture] Segment:', segment.type, segment.text);
               if (segment.type === 'hashtag') {
                 // Ensure tag starts with #
                 const tagText = segment.text.startsWith('#') ? segment.text : '#' + segment.text;
@@ -458,7 +463,7 @@ class Plugin extends AppPlugin {
       // Approach 2: Also search without the # to find partial matches
       if (tags.size === 0) {
         const plainQuery = query.replace(/^#/, '');
-        console.log('[Web Capture] Trying plain search:', plainQuery);
+        log('[Web Capture] Trying plain search:', plainQuery);
         const plainResults = await this.data.searchByQuery(plainQuery, 50);
         
         if (plainResults.lines) {
@@ -478,7 +483,7 @@ class Plugin extends AppPlugin {
       }
 
       const tagArray = Array.from(tags).slice(0, 10);
-      console.log('[Web Capture] Found tags:', tagArray);
+      log('[Web Capture] Found tags:', tagArray);
       return tagArray;
     } catch (error) {
       console.error('[Web Capture] Get tags failed:', error);

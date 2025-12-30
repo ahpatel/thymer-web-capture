@@ -1,7 +1,7 @@
 :root {
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
-  --primary-light: #e0e7ff;
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --primary-light: rgba(79, 70, 229, 0.12);
   --success: #10b981;
   --error: #ef4444;
   --warning: #f59e0b;
@@ -12,6 +12,9 @@
   --text: #1e293b;
   --text-secondary: #64748b;
   --text-muted: #94a3b8;
+  --input-bg: #ffffff;
+  --success-bg: rgba(16, 185, 129, 0.12);
+  --error-bg: rgba(239, 68, 68, 0.12);
   --radius: 8px;
   --radius-sm: 4px;
   --shadow: 0 1px 3px rgba(0,0,0,0.1);
@@ -20,35 +23,29 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --primary: #818cf8;
-    --primary-hover: #6366f1;
-    --primary-light: #312e81;
+    --primary: #8b85ff;
+    --primary-hover: #a09bff;
+    --primary-light: rgba(139, 133, 255, 0.18);
     --success: #34d399;
     --error: #f87171;
     --warning: #fbbf24;
-    --bg: #1e1e1e;
-    --bg-secondary: #2d2d2d;
-    --bg-tertiary: #3d3d3d;
-    --border: #404040;
-    --text: #e5e5e5;
-    --text-secondary: #a3a3a3;
-    --text-muted: #737373;
+    --bg: #0f1115;
+    --bg-secondary: #151821;
+    --bg-tertiary: #1b2030;
+    --border: rgba(255, 255, 255, 0.10);
+    --text: rgba(255, 255, 255, 0.92);
+    --text-secondary: rgba(255, 255, 255, 0.70);
+    --text-muted: rgba(255, 255, 255, 0.50);
     --shadow: 0 1px 3px rgba(0,0,0,0.3);
     --shadow-lg: 0 4px 12px rgba(0,0,0,0.4);
-    --input-bg: #3d3d3d;
-  }
-
-  .dest-btn {
-    color: #e5e5e5;
-  }
-
-  .dest-btn.active {
-    color: #e5e5e5;
+    --input-bg: rgba(255, 255, 255, 0.06);
+    --success-bg: rgba(52, 211, 153, 0.14);
+    --error-bg: rgba(248, 113, 113, 0.14);
   }
 
   input, .search-input, .tag-input, .setting-input, .setting-select {
-    background: var(--input-bg) !important;
-    color: #e5e5e5 !important;
+    background: var(--input-bg);
+    color: var(--text);
   }
 }
 
@@ -56,6 +53,13 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+input::placeholder,
+.search-input::placeholder,
+.tag-input::placeholder,
+.setting-input::placeholder {
+  color: var(--text-muted);
 }
 
 body {
@@ -91,7 +95,7 @@ body {
   gap: 8px;
   font-weight: 600;
   font-size: 14px;
-  color: var(--primary);
+  color: var(--text);
 }
 
 .logo svg {
@@ -118,12 +122,12 @@ body {
 }
 
 .connection-status.connected {
-  background: #ecfdf5;
+  background: var(--success-bg);
   color: var(--success);
 }
 
 .connection-status.disconnected {
-  background: #fef2f2;
+  background: var(--error-bg);
   color: var(--error);
 }
 
@@ -179,7 +183,7 @@ body {
 .mode-btn.active {
   border-color: var(--primary);
   background: var(--primary-light);
-  color: var(--primary);
+  color: var(--text);
 }
 
 .mode-btn svg {
@@ -218,7 +222,7 @@ body {
 .dest-btn.active {
   background: var(--primary-light);
   border-color: var(--primary);
-  color: var(--primary);
+  color: var(--text);
 }
 
 /* Radio Options (legacy) */
@@ -303,6 +307,8 @@ body {
   border-radius: var(--radius);
   font-size: 13px;
   outline: none;
+  background: var(--input-bg);
+  color: var(--text);
   transition: border-color 0.15s ease;
 }
 
@@ -435,6 +441,8 @@ body {
   border-radius: var(--radius);
   font-size: 13px;
   outline: none;
+  background: var(--input-bg);
+  color: var(--text);
 }
 
 .tag-input:focus {
@@ -664,7 +672,8 @@ body {
   border-radius: var(--radius);
   font-size: 13px;
   outline: none;
-  background: var(--bg);
+  background: var(--input-bg);
+  color: var(--text);
 }
 
 .setting-select:focus {
@@ -677,7 +686,8 @@ body {
   border-radius: var(--radius);
   font-size: 13px;
   width: 100%;
-  background: var(--bg);
+  background: var(--input-bg);
+  color: var(--text);
 }
 
 .setting-input:focus {

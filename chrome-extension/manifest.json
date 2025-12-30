@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Thymer Web Capture",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "Quickly capture web links, highlights, and pages to Thymer",
   "permissions": [
     "activeTab",
