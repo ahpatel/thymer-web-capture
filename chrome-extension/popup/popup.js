@@ -13,7 +13,8 @@ class ThymerCapture {
       tags: [],
       pageData: null,
       isConnected: false,
-      isSending: false
+      isSending: false,
+      isPreviewExpanded: false
     };
     
     this.elements = {};
@@ -42,6 +43,8 @@ class ThymerCapture {
       tagsList: document.getElementById('tags-list'),
       tagInput: document.getElementById('tag-input'),
       tagSuggestions: document.getElementById('tag-suggestions'),
+      preview: document.getElementById('preview'),
+      previewToggle: document.getElementById('preview-toggle'),
       previewTitle: document.getElementById('preview-title'),
       previewUrl: document.getElementById('preview-url'),
       previewContent: document.getElementById('preview-content'),
@@ -54,7 +57,8 @@ class ThymerCapture {
       defaultDestination: document.getElementById('default-destination'),
       defaultTag: document.getElementById('default-tag'),
       autoClose: document.getElementById('auto-close'),
-      showNotification: document.getElementById('show-notification')
+      showNotification: document.getElementById('show-notification'),
+      autoWebCaptureTag: document.getElementById('auto-web-capture-tag')
     };
   }
 
@@ -86,17 +90,15 @@ class ThymerCapture {
     // Tag input
     this.elements.tagInput.addEventListener('input', () => this.handleTagInput());
     this.elements.tagInput.addEventListener('keydown', (e) => this.handleTagKeydown(e));
-    this.elements.tagInput.addEventListener('focus', () => {
-      if (this.elements.tagInput.value.trim().length === 0) {
-        this.showRecentTags();
-      }
-    });
     this.elements.tagInput.addEventListener('blur', () => {
       setTimeout(() => this.elements.tagSuggestions.classList.add('hidden'), 200);
     });
 
     // Send button
     this.elements.sendBtn.addEventListener('click', () => this.sendToThymer());
+
+    // Preview toggle
+    this.elements.previewToggle.addEventListener('click', () => this.togglePreview());
 
     // Settings
     this.elements.settingsBtn.addEventListener('click', () => this.showSettings());
@@ -107,6 +109,14 @@ class ThymerCapture {
     this.elements.defaultTag.addEventListener('change', () => this.saveSettings());
     this.elements.autoClose.addEventListener('change', () => this.saveSettings());
     this.elements.showNotification.addEventListener('change', () => this.saveSettings());
+    this.elements.autoWebCaptureTag.addEventListener('change', () => {
+      if (this.elements.autoWebCaptureTag.checked) {
+        this.addTag('#web-capture');
+      } else {
+        this.removeTag('#web-capture');
+      }
+      this.saveSettings();
+    });
 
     // Close page results when clicking outside
     document.addEventListener('click', (e) => {
@@ -122,13 +132,15 @@ class ThymerCapture {
       defaultTag: '#web-capture',
       autoClose: true,
       showNotification: true,
+      autoWebCaptureTag: true,
       lastSelectedPage: null
     });
 
     this.elements.defaultDestination.value = settings.defaultDestination;
-    this.elements.defaultTag.value = settings.defaultTag || '';
+    this.elements.defaultTag.value = this.normalizeTag(settings.defaultTag || '');
     this.elements.autoClose.checked = settings.autoClose;
     this.elements.showNotification.checked = settings.showNotification;
+    this.elements.autoWebCaptureTag.checked = settings.autoWebCaptureTag;
 
     // Apply defaults
     if (settings.defaultDestination !== 'ask') {
@@ -138,9 +150,14 @@ class ThymerCapture {
       });
     }
 
-    // Apply default tag
+    // Apply default tag (if configured)
     if (settings.defaultTag) {
-      this.addTag(settings.defaultTag);
+      this.addTag(this.normalizeTag(settings.defaultTag));
+    }
+
+    // Always add #web-capture (unless disabled)
+    if (settings.autoWebCaptureTag) {
+      this.addTag('#web-capture');
     }
 
     // Restore last selected page if destination is 'page'
@@ -153,10 +170,17 @@ class ThymerCapture {
   async saveSettings() {
     await chrome.storage.sync.set({
       defaultDestination: this.elements.defaultDestination.value,
-      defaultTag: this.elements.defaultTag.value.replace(/^#/, ''),
+      defaultTag: this.normalizeTag(this.elements.defaultTag.value),
       autoClose: this.elements.autoClose.checked,
-      showNotification: this.elements.showNotification.checked
+      showNotification: this.elements.showNotification.checked,
+      autoWebCaptureTag: this.elements.autoWebCaptureTag.checked
     });
+  }
+
+  togglePreview() {
+    this.state.isPreviewExpanded = !this.state.isPreviewExpanded;
+    this.elements.preview.classList.toggle('collapsed', !this.state.isPreviewExpanded);
+    this.elements.previewToggle.textContent = this.state.isPreviewExpanded ? 'Hide' : 'Show';
   }
 
   async loadPageData() {
@@ -223,8 +247,18 @@ class ThymerCapture {
     this.state.destination = destination;
     if (destination === 'page') {
       this.elements.pageSearchContainer.classList.remove('hidden');
+      this.maybeAutoSelectLastPage();
     } else {
       this.elements.pageSearchContainer.classList.add('hidden');
+    }
+  }
+
+  async maybeAutoSelectLastPage() {
+    if (this.state.selectedPage) return;
+    const data = await chrome.storage.sync.get({ lastSelectedPage: null });
+    if (data.lastSelectedPage) {
+      this.state.selectedPage = data.lastSelectedPage;
+      this.showSelectedPage(data.lastSelectedPage);
     }
   }
 
@@ -276,6 +310,9 @@ class ThymerCapture {
     
     // Save to recent pages
     this.saveRecentPage(page);
+
+    // Save last selected page
+    chrome.storage.sync.set({ lastSelectedPage: page });
   }
 
   showSelectedPage(page) {
@@ -286,6 +323,8 @@ class ThymerCapture {
   clearPageSelection() {
     this.state.selectedPage = null;
     this.elements.selectedPage.classList.add('hidden');
+
+    chrome.storage.sync.set({ lastSelectedPage: null });
   }
 
   async saveRecentPage(page) {
@@ -409,6 +448,7 @@ class ThymerCapture {
   }
 
   addTag(tag) {
+    tag = this.normalizeTag(tag);
     if (!this.state.tags.includes(tag)) {
       this.state.tags.push(tag);
       this.renderTags();
@@ -416,6 +456,12 @@ class ThymerCapture {
     }
     this.elements.tagInput.value = '';
     this.elements.tagSuggestions.classList.add('hidden');
+  }
+
+  normalizeTag(tag) {
+    const trimmed = (tag || '').trim();
+    if (!trimmed) return '';
+    return trimmed.startsWith('#') ? trimmed : `#${trimmed}`;
   }
 
   removeTag(tag) {
