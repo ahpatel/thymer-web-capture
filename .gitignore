@@ -1,0 +1,10 @@
+# Ignore all subdirectories by default
+# We'll explicitly track submodules when added
+*/
+
+# Allow some common files
+!README.md
+!.gitmodules
+
+# macOS
+.DS_Store
