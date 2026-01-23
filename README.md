@@ -7,6 +7,7 @@ Main repository for Thymer plugins and extensions.
 This repository uses git submodules to organize various Thymer plugins:
 
 - `thymer-web-capture` - Web capture functionality
+- `thymer-quick-capture` - Quick capture plugin
 
 ## Setup
 

@@ -1,10 +1,20 @@
-# Ignore all subdirectories by default
-# We'll explicitly track submodules when added
-*/
+# macOS
+.DS_Store
 
-# Allow some common files
-!README.md
-!.gitmodules
+# Ignore local directories (not yet as submodules)
+thymer-aliases/
+thymer-crm/
+thymer-indent-rainbow/
+thymer-journal/
+thymer-logseq-importer/
+thymer-maps/
+thymer-org-chart/
+thymer-outliner/
+thymer-plugin-sdk/
+thymer-toc/
+thymer-wide-mode/
+*.bak/
+thymer/
 
 # macOS
 .DS_Store
