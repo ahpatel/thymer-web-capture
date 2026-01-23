@@ -4,7 +4,6 @@
 # Ignore local directories (not yet as submodules)
 thymer-aliases/
 thymer-crm/
-thymer-indent-rainbow/
 thymer-journal/
 thymer-logseq-importer/
 thymer-maps/

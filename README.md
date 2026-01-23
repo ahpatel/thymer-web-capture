@@ -8,6 +8,7 @@ This repository uses git submodules to organize various Thymer plugins:
 
 - `thymer-web-capture` - Web capture functionality
 - `thymer-quick-capture` - Quick capture plugin
+- `thymer-indent-rainbow` - Indent rainbow plugin
 
 ## Setup
 
