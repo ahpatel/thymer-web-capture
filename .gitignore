@@ -4,7 +4,10 @@
 # Ignore all directories by default
 */
 
-# Explicitly track these approved directories
+# Explicitly track these approved directories and their contents
 !thymer-web-capture/
+!thymer-web-capture/**
 !thymer-quick-capture/
+!thymer-quick-capture/**
 !thymer-indent-rainbow/
+!thymer-indent-rainbow/**

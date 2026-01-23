@@ -1,0 +1,57 @@
+{
+  "manifest_version": 3,
+  "name": "Thymer Web Capture",
+  "version": "0.0.2",
+  "description": "Quickly capture web links, highlights, and pages to Thymer",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "contextMenus",
+    "scripting",
+    "notifications"
+  ],
+  "host_permissions": [
+    "https://*.thymer.com/*",
+    "<all_urls>"
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "exclude_matches": ["https://*.thymer.com/*"],
+      "js": ["content/content.js"]
+    },
+    {
+      "matches": ["https://*.thymer.com/*"],
+      "js": ["content/thymer-bridge.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "commands": {
+    "_execute_action": {
+      "description": "Open Thymer Web Capture"
+    },
+    "quick_capture": {
+      "suggested_key": {
+        "default": "Alt+Shift+C",
+        "mac": "Option+Shift+C"
+      },
+      "description": "Web capture current selection to Thymer"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
