@@ -1,9 +1,0 @@
-[submodule "thymer-web-capture"]
-	path = thymer-web-capture
-	url = https://github.com/ahpatel/thymer-web-capture.git
-[submodule "thymer-quick-capture"]
-	path = thymer-quick-capture
-	url = https://github.com/ahpatel/thymer-quick-capture.git
-[submodule "thymer-indent-rainbow"]
-	path = thymer-indent-rainbow
-	url = https://github.com/ahpatel/thymer-indent-rainbow.git

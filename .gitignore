@@ -1,19 +1,10 @@
 # macOS
 .DS_Store
 
-# Ignore local directories (not yet as submodules)
-thymer-aliases/
-thymer-crm/
-thymer-journal/
-thymer-logseq-importer/
-thymer-maps/
-thymer-org-chart/
-thymer-outliner/
-thymer-plugin-sdk/
-thymer-toc/
-thymer-wide-mode/
-*.bak/
-thymer/
+# Ignore all directories by default
+*/
 
-# macOS
-.DS_Store
+# Explicitly track these approved directories
+!thymer-web-capture/
+!thymer-quick-capture/
+!thymer-indent-rainbow/

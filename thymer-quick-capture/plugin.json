@@ -1,0 +1,10 @@
+{
+  "ver": 1,
+  "name": "Quick Capture",
+  "icon": "notes",
+  "description": "Quickly capture notes and add them to today's Journal or any page",
+  "show_sidebar_items": false,
+  "show_cmdpal_items": true,
+  "home": false,
+  "custom": {}
+}

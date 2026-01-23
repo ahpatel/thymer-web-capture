@@ -1,19 +1,9 @@
 # Thymer
 
-Main repository for Thymer plugins and extensions.
+Monorepo for Thymer plugins and extensions.
 
-## Submodules
-
-This repository uses git submodules to organize various Thymer plugins:
+## Plugins
 
 - `thymer-web-capture` - Web capture functionality
 - `thymer-quick-capture` - Quick capture plugin
 - `thymer-indent-rainbow` - Indent rainbow plugin
-
-## Setup
-
-After cloning, initialize submodules:
-
-```bash
-git submodule update --init --recursive
-```

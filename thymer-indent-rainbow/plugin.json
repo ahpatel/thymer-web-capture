@@ -1,0 +1,8 @@
+{
+    "ver": 1,
+    "name": "Thymer Indent Rainbow",
+    "icon": "ti-paint",
+    "item_name": "Note",
+    "description": "Enhanced hierarchy visualization with rainbow-colored indent guides like IDEs",
+    "show_cmdpal_items": true
+}
